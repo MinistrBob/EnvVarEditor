@@ -49,6 +49,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.listView1);
             this.groupBox1.Location = new System.Drawing.Point(13, 12);
             this.groupBox1.Name = "groupBox1";
@@ -87,6 +89,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.listView2);
             this.groupBox2.Location = new System.Drawing.Point(13, 238);
             this.groupBox2.Name = "groupBox2";
@@ -141,6 +146,7 @@
             this.btLocalChange.TabIndex = 3;
             this.btLocalChange.Text = "Изменить";
             this.btLocalChange.UseVisualStyleBackColor = true;
+            this.btLocalChange.Click += new System.EventHandler(this.btLocalChange_Click);
             // 
             // btLocalDelete
             // 
@@ -154,6 +160,7 @@
             // 
             // btGlobalCreate
             // 
+            this.btGlobalCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btGlobalCreate.Location = new System.Drawing.Point(13, 633);
             this.btGlobalCreate.Name = "btGlobalCreate";
             this.btGlobalCreate.Size = new System.Drawing.Size(75, 23);
@@ -164,21 +171,25 @@
             // 
             // btGlobalChange
             // 
+            this.btGlobalChange.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btGlobalChange.Location = new System.Drawing.Point(102, 633);
             this.btGlobalChange.Name = "btGlobalChange";
             this.btGlobalChange.Size = new System.Drawing.Size(75, 23);
             this.btGlobalChange.TabIndex = 6;
             this.btGlobalChange.Text = "Изменить";
             this.btGlobalChange.UseVisualStyleBackColor = true;
+            this.btGlobalChange.Click += new System.EventHandler(this.btGlobalChange_Click);
             // 
             // btGlobalDelete
             // 
+            this.btGlobalDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btGlobalDelete.Location = new System.Drawing.Point(255, 633);
             this.btGlobalDelete.Name = "btGlobalDelete";
             this.btGlobalDelete.Size = new System.Drawing.Size(75, 23);
             this.btGlobalDelete.TabIndex = 7;
             this.btGlobalDelete.Text = "Удалить";
             this.btGlobalDelete.UseVisualStyleBackColor = true;
+            this.btGlobalDelete.Click += new System.EventHandler(this.btGlobalDelete_Click);
             // 
             // Form1
             // 
@@ -195,7 +206,7 @@
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Environment Variables Editor";
+            this.Text = "EVE - Environment Variables Editor";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);

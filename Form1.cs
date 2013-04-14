@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Collections; 
+using System.Collections;
+using System.Windows.Forms; 
 
 namespace EnvVarEditor
 {
@@ -92,12 +86,109 @@ namespace EnvVarEditor
 
         private void btLocalDelete_Click(object sender, EventArgs e)
         {
-            string varText = null;
-
-            foreach (ListViewItem item in listView1.Items)
+            if (listView1.SelectedItems.Count > 0)
             {
-                varText = varText + item.SubItems[0].Text + ";";
-            } 
+                var result = MessageBox.Show("Вы уверены что хотите удалить переменную " + listView1.SelectedItems[0].Text + "?", "Удалить переменную?",
+                             MessageBoxButtons.YesNo,
+                             MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        Environment.SetEnvironmentVariable(listView1.SelectedItems[0].Text, null, EnvironmentVariableTarget.User);
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+                    UserEnvListRefresh();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите переменную для удаления");
+            }
+
+        }
+
+        private void btGlobalDelete_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count > 0)
+            {
+                var result = MessageBox.Show("Вы уверены что хотите удалить переменную " + listView2.SelectedItems[0].Text + "?", "Удалить переменную?",
+                             MessageBoxButtons.YesNo,
+                             MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        Environment.SetEnvironmentVariable(listView2.SelectedItems[0].Text, null, EnvironmentVariableTarget.Machine);
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+                    MachineEnvListRefresh();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите переменную для удаления");
+            }
+        }
+
+        private void btLocalChange_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                ValueEditor.Text = "Редактирование переменной пользователя " + listView1.SelectedItems[0].Text;
+                ValueEditor.VariableType = "User";
+                ValueEditor.VariableName = listView1.SelectedItems[0].Text;
+                ValueEditor.VariableValue = listView1.SelectedItems[0].SubItems[1].Text;
+                if (listView1.SelectedItems[0].SubItems[1].Text.Contains(";"))
+                {
+                    CreateComplexControl();
+                }
+                else
+                {
+                    CreateSimpleControl();
+                }
+                ValueEditor.ShowDialog();
+                UserEnvListRefresh();
+            }
+            else
+            {
+                MessageBox.Show("Выберите переменную для редактирования");
+            }
+        }
+
+        private void btGlobalChange_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count > 0)
+            {
+                ValueEditor.Text = "Редактирование системной переменной " + listView2.SelectedItems[0].Text;
+                ValueEditor.VariableType = "Machine";
+                ValueEditor.VariableName = listView2.SelectedItems[0].Text;
+                ValueEditor.VariableValue = listView2.SelectedItems[0].SubItems[1].Text;
+                if (listView2.SelectedItems[0].SubItems[1].Text.Contains(";"))
+                {
+                    CreateComplexControl();
+                }
+                else
+                {
+                    CreateSimpleControl();
+                }
+                ValueEditor.ShowDialog();
+                MachineEnvListRefresh();
+            }
+            else
+            {
+                MessageBox.Show("Выберите переменную для редактирования");
+            }
         }
     }
 }

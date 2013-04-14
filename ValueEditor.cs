@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace EnvVarEditor
@@ -12,8 +6,13 @@ namespace EnvVarEditor
     public partial class ValueEditor : Form
     {
 
+
         // Тип переменной User или Machine
         public string VariableType {get; set;}
+        // Имя переменной 
+        public string VariableName { get; set; }
+        // Значение переменной
+        public string VariableValue { get; set; }
 
         public ValueEditor()
         {
@@ -22,6 +21,7 @@ namespace EnvVarEditor
 
         private void button2_Click(object sender, EventArgs e)
         {
+            groupBox2.Controls[0].Dispose();
             this.Close();
         }
 
@@ -38,15 +38,15 @@ namespace EnvVarEditor
             }
             //
             string varText = null;
-            // Если контрол ValueComplexVariable то это преобразование вернет null
+            // (Если контрол ValueComplexVariable то это преобразование вернет null)
             var c = groupBox2.Controls[0] as ValueSimpleVariable;
             // Если ValueSimpleVariable
             if (c != null)
                 varText = c.varText;
             var d = groupBox2.Controls[0] as ValueComplexVariable;
-            // Если ValueSimpleVariable
+            // Если ValueComplexVariable
             if (d != null)
-                varText = d.varText;
+                varText = d.varText.TrimEnd(';');
             //MessageBox.Show(c.varText);
             // Имя переменной должно быть
             if (string.IsNullOrEmpty(varText))
@@ -71,6 +71,24 @@ namespace EnvVarEditor
                 throw;
             }
             
+            groupBox2.Controls[0].Dispose();
+            this.Close();
+            
+        }
+
+        private void ValueEditor_Load(object sender, EventArgs e)
+        {
+            this.tbVarName.Text = VariableName;
+
+            // (Если контрол ValueComplexVariable то это преобразование вернет null)
+            var c = groupBox2.Controls[0] as ValueSimpleVariable;
+            // Если ValueSimpleVariable
+            if (c != null)
+                c.varText = VariableValue;
+            // Если ValueComplexVariable
+            var d = groupBox2.Controls[0] as ValueComplexVariable;
+            if (d != null)
+                d.varText = VariableValue;
         }
 
     }

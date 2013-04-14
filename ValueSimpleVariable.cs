@@ -16,6 +16,16 @@ namespace EnvVarEditor
             InitializeComponent();
         }
 
-        public string varText { get {return textBox1.Text;} }
+        public string varText 
+        { 
+            get 
+            {
+                return textBox1.Text;
+            }
+            set
+            {
+                textBox1.Text=value;
+            }
+        }
     }
 }
