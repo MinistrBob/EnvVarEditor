@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Security;
 
 namespace EnvVarEditor
 {
@@ -8,11 +9,13 @@ namespace EnvVarEditor
 
 
         // Тип переменной User или Machine
-        public string VariableType {get; set;}
+        public EnvironmentVariableTarget VariableType { get; set; }
         // Имя переменной 
         public string VariableName { get; set; }
         // Значение переменной
         public string VariableValue { get; set; }
+        //
+        public string VariableLength { get; set; }
 
         public ValueEditor()
         {
@@ -21,21 +24,21 @@ namespace EnvVarEditor
 
         private void button2_Click(object sender, EventArgs e)
         {
+            ExitValueEditor();
+        }
+
+        /// <summary>
+        /// Выход из процедуры с Dispose control, чтобы при следующем открытии формы был нужный контрол
+        /// </summary>
+        private void ExitValueEditor()
+        {
             groupBox2.Controls[0].Dispose();
             this.Close();
         }
 
         private void btOK_Click(object sender, EventArgs e)
         {
-            EnvironmentVariableTarget target;
-            if (VariableType=="User")
-            {
-                target=EnvironmentVariableTarget.User;
-            }
-            else
-            {
-                target=EnvironmentVariableTarget.Machine;
-            }
+            EnvironmentVariableTarget target = VariableType;
             //
             string varText = null;
             // (Если контрол ValueComplexVariable то это преобразование вернет null)
@@ -49,7 +52,7 @@ namespace EnvVarEditor
                 varText = d.varText.TrimEnd(';');
             //MessageBox.Show(c.varText);
             // Имя переменной должно быть
-            if (string.IsNullOrEmpty(varText))
+            if (string.IsNullOrEmpty(tbVarName.Text))
             {
                 MessageBox.Show("Задайте имя переменной");
                 return;
@@ -61,18 +64,29 @@ namespace EnvVarEditor
                 return;
             }
 
+            if (varText.Length>32767)
+            {
+                MessageBox.Show("Переменная не может быть длинее 32767 символов");
+                return;
+            }
+
             try
             {
                 Environment.SetEnvironmentVariable(tbVarName.Text, varText, target);
             }
+            catch (SecurityException)
+            {
+                MessageBox.Show("У вас нет прав на выполение данной операции");
+                // Остаёмся в этом же окне, чтобы дать пользователю возможность исправить переменную
+                return;
+            }
             catch (Exception)
             {
-                    
+
                 throw;
             }
-            
-            groupBox2.Controls[0].Dispose();
-            this.Close();
+
+            ExitValueEditor();
             
         }
 

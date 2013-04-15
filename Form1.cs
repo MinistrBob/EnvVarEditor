@@ -26,36 +26,41 @@ namespace EnvVarEditor
 
         private void UserEnvListRefresh()
         {
-            listView1.Items.Clear();
             // Переменные User из HKEY_CURRENT_USER\Environment
-            IDictionary environmentVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User);
-            foreach (DictionaryEntry de in environmentVariables)
-            {
-                ListViewItem lvi = new ListViewItem(new string[] { de.Key.ToString(), de.Value.ToString() });
-                listView1.Items.Add(lvi);
-            }
-            listView1.Columns[0].Width = -1;
-            listView1.Columns[1].Width = -1;
+            ListRefresh(listView1, EnvironmentVariableTarget.User);
         }
 
         private void MachineEnvListRefresh()
         {
-            listView2.Items.Clear();
             // Переменные Machine из HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment
-            IDictionary environmentVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
+            ListRefresh(listView2, EnvironmentVariableTarget.Machine);
+        }
+
+        private void ListRefresh(ListView lv, EnvironmentVariableTarget target)
+        {
+            lv.Items.Clear();
+            IDictionary environmentVariables;
+            if (target==EnvironmentVariableTarget.User)
+            {
+                environmentVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User);    
+            }
+            else
+            {
+                environmentVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
+            }
             foreach (DictionaryEntry de in environmentVariables)
             {
                 ListViewItem lvi = new ListViewItem(new string[] { de.Key.ToString(), de.Value.ToString() });
-                listView2.Items.Add(lvi);
+                lv.Items.Add(lvi);
             }
-            listView2.Columns[0].Width = -1;
-            listView2.Columns[1].Width = -1;
+            lv.Columns[0].Width = -1;
+            lv.Columns[1].Width = -1;
         }
 
         private void btLocalCreate_Click(object sender, EventArgs e)
         {
             ValueEditor.Text = "Создание новой переменной пользователя " + Environment.UserName.ToUpper();
-            ValueEditor.VariableType = "User";
+            ValueEditor.VariableType = EnvironmentVariableTarget.User;
             CreateSimpleControl();
             ValueEditor.ShowDialog();
             UserEnvListRefresh();
@@ -64,7 +69,7 @@ namespace EnvVarEditor
         private void btGlobalCreate_Click(object sender, EventArgs e)
         {
             ValueEditor.Text = "Создание системной переменной " + Environment.MachineName.ToUpper();
-            ValueEditor.VariableType = "Machine";
+            ValueEditor.VariableType = EnvironmentVariableTarget.Machine;
             CreateSimpleControl();
             ValueEditor.ShowDialog();
             MachineEnvListRefresh();
@@ -86,38 +91,19 @@ namespace EnvVarEditor
 
         private void btLocalDelete_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                var result = MessageBox.Show("Вы уверены что хотите удалить переменную " + listView1.SelectedItems[0].Text + "?", "Удалить переменную?",
-                             MessageBoxButtons.YesNo,
-                             MessageBoxIcon.Warning);
-
-                if (result == DialogResult.Yes)
-                {
-                    try
-                    {
-                        Environment.SetEnvironmentVariable(listView1.SelectedItems[0].Text, null, EnvironmentVariableTarget.User);
-                    }
-                    catch (Exception)
-                    {
-
-                        throw;
-                    }
-                    UserEnvListRefresh();
-                }
-            }
-            else
-            {
-                MessageBox.Show("Выберите переменную для удаления");
-            }
-
+            DeleteEnv(listView1, EnvironmentVariableTarget.User);
         }
 
         private void btGlobalDelete_Click(object sender, EventArgs e)
         {
-            if (listView2.SelectedItems.Count > 0)
+            DeleteEnv(listView2, EnvironmentVariableTarget.Machine);
+        }
+
+        private void DeleteEnv(ListView lv, EnvironmentVariableTarget target)
+        {
+            if (lv.SelectedItems.Count > 0)
             {
-                var result = MessageBox.Show("Вы уверены что хотите удалить переменную " + listView2.SelectedItems[0].Text + "?", "Удалить переменную?",
+                var result = MessageBox.Show("Вы уверены что хотите удалить переменную " + lv.SelectedItems[0].Text + "?", "Удалить переменную?",
                              MessageBoxButtons.YesNo,
                              MessageBoxIcon.Warning);
 
@@ -125,14 +111,22 @@ namespace EnvVarEditor
                 {
                     try
                     {
-                        Environment.SetEnvironmentVariable(listView2.SelectedItems[0].Text, null, EnvironmentVariableTarget.Machine);
+                        Environment.SetEnvironmentVariable(lv.SelectedItems[0].Text, null, target);
                     }
                     catch (Exception)
                     {
 
                         throw;
                     }
-                    MachineEnvListRefresh();
+                    if (target == EnvironmentVariableTarget.User)
+                    {
+                        UserEnvListRefresh();
+                    }
+                    else
+                    {
+                        MachineEnvListRefresh();
+                    }
+                    
                 }
             }
             else
@@ -143,38 +137,23 @@ namespace EnvVarEditor
 
         private void btLocalChange_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                ValueEditor.Text = "Редактирование переменной пользователя " + listView1.SelectedItems[0].Text;
-                ValueEditor.VariableType = "User";
-                ValueEditor.VariableName = listView1.SelectedItems[0].Text;
-                ValueEditor.VariableValue = listView1.SelectedItems[0].SubItems[1].Text;
-                if (listView1.SelectedItems[0].SubItems[1].Text.Contains(";"))
-                {
-                    CreateComplexControl();
-                }
-                else
-                {
-                    CreateSimpleControl();
-                }
-                ValueEditor.ShowDialog();
-                UserEnvListRefresh();
-            }
-            else
-            {
-                MessageBox.Show("Выберите переменную для редактирования");
-            }
+            EditEnv(listView1, EnvironmentVariableTarget.User);
         }
 
         private void btGlobalChange_Click(object sender, EventArgs e)
         {
-            if (listView2.SelectedItems.Count > 0)
+            EditEnv(listView2, EnvironmentVariableTarget.Machine);
+        }
+
+        private void EditEnv(ListView lv, EnvironmentVariableTarget target)
+        {
+            if (lv.SelectedItems[0].Text.Length > 0)
             {
-                ValueEditor.Text = "Редактирование системной переменной " + listView2.SelectedItems[0].Text;
-                ValueEditor.VariableType = "Machine";
-                ValueEditor.VariableName = listView2.SelectedItems[0].Text;
-                ValueEditor.VariableValue = listView2.SelectedItems[0].SubItems[1].Text;
-                if (listView2.SelectedItems[0].SubItems[1].Text.Contains(";"))
+                ValueEditor.Text = "Редактирование переменной " + lv.SelectedItems[0].Text;
+                ValueEditor.VariableType = target;
+                ValueEditor.VariableName = lv.SelectedItems[0].Text;
+                ValueEditor.VariableValue = lv.SelectedItems[0].SubItems[1].Text;
+                if (lv.SelectedItems[0].SubItems[1].Text.Contains(";"))
                 {
                     CreateComplexControl();
                 }
@@ -183,7 +162,15 @@ namespace EnvVarEditor
                     CreateSimpleControl();
                 }
                 ValueEditor.ShowDialog();
-                MachineEnvListRefresh();
+                if (target == EnvironmentVariableTarget.User)
+                {
+                    UserEnvListRefresh();
+                }
+                else
+                {
+                    MachineEnvListRefresh();
+                }
+                
             }
             else
             {

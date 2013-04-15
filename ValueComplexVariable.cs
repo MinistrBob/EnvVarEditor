@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Collections;
 
 namespace EnvVarEditor
 {
@@ -119,5 +112,31 @@ namespace EnvVarEditor
             ListViewItem listItem = new ListViewItem("Новая строка");
             listView1.Items.Add(listItem);
         }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckVarLength();
+        }
+
+        private void ValueComplexVariable_Load(object sender, EventArgs e)
+        {
+            CheckVarLength();
+        }
+
+        private void CheckVarLength()
+        {
+            if (!string.IsNullOrEmpty(varText))
+            {
+                if (varText.Length > 2048)
+                {
+                    toolStripStatusLabel1.Text = varText.Length.ToString() + " - Рекомендуемая длина переменной 2048 символов";
+                }
+                else
+                {
+                    toolStripStatusLabel1.Text = varText.Length.ToString();
+                } 
+            }
+        }
+
     }
 }

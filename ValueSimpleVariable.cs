@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace EnvVarEditor
 {
@@ -25,6 +18,21 @@ namespace EnvVarEditor
             set
             {
                 textBox1.Text=value;
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, System.EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(textBox1.Text))
+            {
+                if (textBox1.Text.Length > 2048)
+                {
+                    toolStripStatusLabel1.Text = textBox1.Text.Length.ToString() + " - Рекомендуемая длина переменной 2048 символов";
+                }
+                else
+                {
+                    toolStripStatusLabel1.Text = textBox1.Text.Length.ToString();
+                } 
             }
         }
     }
