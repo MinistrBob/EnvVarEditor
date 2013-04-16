@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Security;
+using Microsoft.Win32;
 
 namespace EnvVarEditor
 {
@@ -70,20 +71,58 @@ namespace EnvVarEditor
                 return;
             }
 
-            try
+            // Если галочка рассылать сообщения стоит, сообщения рассылаются, но создание и изменение медленное, 
+            // иначе делаем все через реестр - быстро.
+            if (DC.IsSendMessages)
             {
-                Environment.SetEnvironmentVariable(tbVarName.Text, varText, target);
-            }
-            catch (SecurityException)
-            {
-                MessageBox.Show("У вас нет прав на выполение данной операции");
-                // Остаёмся в этом же окне, чтобы дать пользователю возможность исправить переменную
-                return;
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    Environment.SetEnvironmentVariable(tbVarName.Text, varText, target);
+                }
+                catch (SecurityException)
+                {
+                    MessageBox.Show("У вас нет прав на выполение данной операции");
+                    // Остаёмся в этом же окне, чтобы дать пользователю возможность исправить переменную
+                    return;
+                }
+                catch (Exception)
+                {
 
-                throw;
+                    throw;
+                } 
+            }
+            else
+            {
+                RegistryKey regKey;
+                if (target == EnvironmentVariableTarget.User)
+                {
+                    regKey = Registry.CurrentUser.OpenSubKey(@"Environment", true);
+                }
+                else
+                {
+                    regKey = Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Control\Session Manager\Environment", true);
+                }
+                using (regKey)
+                {
+                    // Обнаружил что в реестре переменные у которых есть подстановка, типа (%SystemRoot%\system32\cmd.exe)
+                    // храняться как REG_EXPAND_SZ
+                    // иначе - просто REG_SZ
+                    RegistryValueKind registryValueKind;
+                    if (varText.Contains("%"))
+                    {
+                        registryValueKind = RegistryValueKind.ExpandString;
+                    }
+                    else
+                    {
+                        registryValueKind = RegistryValueKind.String;
+                    }
+                    regKey.SetValue(tbVarName.Text, varText, registryValueKind);
+                    // Если было переименование - нужно удалить старую переменную
+                    if (!string.IsNullOrEmpty(VariableName) && tbVarName.Text != VariableName)
+                    {
+                        regKey.DeleteValue(VariableName);
+                    }
+                }
             }
 
             ExitValueEditor();

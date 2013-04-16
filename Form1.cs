@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Windows.Forms; 
+using System.Windows.Forms;
+using System.Security;
+using Microsoft.Win32; 
 
 namespace EnvVarEditor
 {
@@ -12,16 +14,15 @@ namespace EnvVarEditor
         public Form1()
         {
             InitializeComponent();
+            DC.IsSendMessages = checkBox1.Checked;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            toolTip1.SetToolTip(this.checkBox1, "Все запущенные приложения не замечают сделаных изменений переменных. Если включить рассылку оповещений, то вновь запускаемые приложения будут видеть изменения переменных. Но при этом все действия с переменными будут происходить долго. Если рассылку не включать то чтобы прилдожения могли увидеть изменения, нужно будет перезагрузить компьютер. При этом все действия с переменными будут происходить очень быстро.");
             groupBox1.Text = "Переменные среды пользователя - " + Environment.UserName.ToUpper();
             groupBox2.Text = "Системные переменные - " + Environment.MachineName.ToUpper();
             UserEnvListRefresh();
             MachineEnvListRefresh();
-
         }
 
         private void UserEnvListRefresh()
@@ -109,15 +110,45 @@ namespace EnvVarEditor
 
                 if (result == DialogResult.Yes)
                 {
-                    try
+                    // Если галочка рассылать сообщения стоит, сообщения рассылаются, но удаление медленное, 
+                    // иначе делаем все через реестр - быстро.
+                    if (DC.IsSendMessages)
                     {
-                        Environment.SetEnvironmentVariable(lv.SelectedItems[0].Text, null, target);
-                    }
-                    catch (Exception)
-                    {
+                        try
+                        {
+                            Environment.SetEnvironmentVariable(lv.SelectedItems[0].Text, null, target);
+                        }
+                        catch (SecurityException)
+                        {
+                            MessageBox.Show("У вас нет прав на выполение данной операции");
+                            // Остаёмся в этом же окне, чтобы дать пользователю возможность исправить переменную
+                            return;
+                        }
+                        catch (Exception)
+                        {
 
-                        throw;
+                            throw;
+                        } 
                     }
+                    else
+                    {
+                        RegistryKey regKey;
+                        if (target == EnvironmentVariableTarget.User)
+                        {
+                            regKey = Registry.CurrentUser.OpenSubKey(@"Environment", true);
+                        }
+                        else
+                        {
+                            regKey = Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Control\Session Manager\Environment", true);
+                        }
+                        using (regKey)
+                        {
+                            regKey.DeleteValue(lv.SelectedItems[0].Text);
+
+                        }
+                    }
+                    
+                    // Просто обновление экрана
                     if (target == EnvironmentVariableTarget.User)
                     {
                         UserEnvListRefresh();
@@ -126,7 +157,6 @@ namespace EnvVarEditor
                     {
                         MachineEnvListRefresh();
                     }
-                    
                 }
             }
             else
@@ -147,7 +177,7 @@ namespace EnvVarEditor
 
         private void EditEnv(ListView lv, EnvironmentVariableTarget target)
         {
-            if (lv.SelectedItems[0].Text.Length > 0)
+            if (lv.SelectedItems.Count == 1)
             {
                 ValueEditor.Text = "Редактирование переменной " + lv.SelectedItems[0].Text;
                 ValueEditor.VariableType = target;
@@ -174,8 +204,14 @@ namespace EnvVarEditor
             }
             else
             {
-                MessageBox.Show("Выберите переменную для редактирования");
+                MessageBox.Show("Выберите одну переменную для редактирования");
             }
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            DC.IsSendMessages = checkBox1.Checked;
+        }
+
     }
 }
