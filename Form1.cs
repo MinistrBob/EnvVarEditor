@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Windows.Forms;
 using System.Security;
-using Microsoft.Win32; 
+using Microsoft.Win32;
+using System.Management; 
 
 namespace EnvVarEditor
 {
@@ -15,12 +16,24 @@ namespace EnvVarEditor
         {
             InitializeComponent();
             DC.IsSendMessages = checkBox1.Checked;
+            DC.NeedReboot = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             groupBox1.Text = "Переменные среды пользователя - " + Environment.UserName.ToUpper();
             groupBox2.Text = "Системные переменные - " + Environment.MachineName.ToUpper();
+            
+            ToolTip toolTip1 = new ToolTip();
+            // Set up the delays for the ToolTip.
+            toolTip1.AutoPopDelay = 15000;
+            toolTip1.InitialDelay = 700;
+            toolTip1.ReshowDelay = 500;
+            // Force the ToolTip text to be displayed whether or not the form is active.
+            toolTip1.ShowAlways = true;
+            // Set up the ToolTip text for the Button and Checkbox.
+            toolTip1.SetToolTip(this.checkBox1, "Все, уже запущенные приложения не замечают сделанных изменений переменных.\r\nЕсли включить рассылку оповещений, то вновь запускаемые приложения будут видеть изменения переменных. При этом действия с переменными (создание, изменение, удаление) будут происходить долго (до нескольких минут).\r\nЕсли рассылку не включать, все действия с переменными будут происходить очень быстро, но чтобы приложения могли увидеть изменения, нужно будет перезагрузить компьютер.");
+
             UserEnvListRefresh();
             MachineEnvListRefresh();
         }
@@ -143,7 +156,16 @@ namespace EnvVarEditor
                         }
                         using (regKey)
                         {
-                            regKey.DeleteValue(lv.SelectedItems[0].Text);
+                            try
+                            {
+                                regKey.DeleteValue(lv.SelectedItems[0].Text);
+                            }
+                            catch (Exception)
+                            {
+                                
+                                throw;
+                            }
+                            DC.NeedReboot = true;
 
                         }
                     }
@@ -211,6 +233,32 @@ namespace EnvVarEditor
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             DC.IsSendMessages = checkBox1.Checked;
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (DC.NeedReboot)
+            {
+                var result = MessageBox.Show("Для того чтобы изменения вступили в силу требуется перезагрузка компьютера.\nПерезагрузить компьютер сейчас?", "Требуется перезагрузка!",
+                                 MessageBoxButtons.YesNo,
+                                 MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
+                {
+                    ManagementBaseObject mboShutdown = null;
+                    ManagementClass mcWin32 = new ManagementClass("Win32_OperatingSystem");
+                    mcWin32.Get();
+                    // You can't shutdown without security privileges
+                    mcWin32.Scope.Options.EnablePrivileges = true;
+                    ManagementBaseObject mboShutdownParams = mcWin32.GetMethodParameters("Win32Shutdown");
+                    // Flag=2 занчит reboot http://msdn.microsoft.com/en-us/library/windows/desktop/aa394058(v=vs.85).aspx
+                    mboShutdownParams["Flags"] = "2";
+                    mboShutdownParams["Reserved"] = "0";
+                    foreach (ManagementObject manObj in mcWin32.GetInstances())
+                    {
+                        mboShutdown = manObj.InvokeMethod("Win32Shutdown", mboShutdownParams, null);
+                    }  
+                }
+            }
         }
 
     }

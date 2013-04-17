@@ -116,12 +116,21 @@ namespace EnvVarEditor
                     {
                         registryValueKind = RegistryValueKind.String;
                     }
-                    regKey.SetValue(tbVarName.Text, varText, registryValueKind);
-                    // Если было переименование - нужно удалить старую переменную
-                    if (!string.IsNullOrEmpty(VariableName) && tbVarName.Text != VariableName)
+                    try
                     {
-                        regKey.DeleteValue(VariableName);
+                        regKey.SetValue(tbVarName.Text, varText, registryValueKind);
+                        // Если было переименование - нужно удалить старую переменную
+                        if (!string.IsNullOrEmpty(VariableName) && tbVarName.Text != VariableName)
+                        {
+                            regKey.DeleteValue(VariableName);
+                        }
                     }
+                    catch (Exception)
+                    {
+                        
+                        throw;
+                    }
+                    DC.NeedReboot = true;
                 }
             }
 

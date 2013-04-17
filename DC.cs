@@ -12,6 +12,6 @@ namespace EnvVarEditor
     {
         public static bool IsSendMessages { get; set; }
 
-
+        public static bool NeedReboot { get; set; }
     }
 }

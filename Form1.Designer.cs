@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.listView1 = new System.Windows.Forms.ListView();
@@ -44,7 +45,7 @@
             this.btGlobalChange = new System.Windows.Forms.Button();
             this.btGlobalDelete = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -54,7 +55,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.listView1);
-            this.groupBox1.Location = new System.Drawing.Point(13, 88);
+            this.groupBox1.Location = new System.Drawing.Point(13, 40);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(759, 166);
             this.groupBox1.TabIndex = 0;
@@ -95,9 +96,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.listView2);
-            this.groupBox2.Location = new System.Drawing.Point(13, 319);
+            this.groupBox2.Location = new System.Drawing.Point(13, 269);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(759, 295);
+            this.groupBox2.Size = new System.Drawing.Size(759, 235);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Системные переменные";
@@ -114,7 +115,7 @@
             this.listView2.Location = new System.Drawing.Point(3, 16);
             this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(753, 276);
+            this.listView2.Size = new System.Drawing.Size(753, 216);
             this.listView2.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listView2.TabIndex = 0;
             this.listView2.UseCompatibleStateImageBehavior = false;
@@ -132,7 +133,7 @@
             // 
             // btLocalCreate
             // 
-            this.btLocalCreate.Location = new System.Drawing.Point(13, 274);
+            this.btLocalCreate.Location = new System.Drawing.Point(13, 226);
             this.btLocalCreate.Name = "btLocalCreate";
             this.btLocalCreate.Size = new System.Drawing.Size(75, 23);
             this.btLocalCreate.TabIndex = 2;
@@ -142,7 +143,7 @@
             // 
             // btLocalChange
             // 
-            this.btLocalChange.Location = new System.Drawing.Point(102, 274);
+            this.btLocalChange.Location = new System.Drawing.Point(102, 226);
             this.btLocalChange.Name = "btLocalChange";
             this.btLocalChange.Size = new System.Drawing.Size(75, 23);
             this.btLocalChange.TabIndex = 3;
@@ -152,7 +153,7 @@
             // 
             // btLocalDelete
             // 
-            this.btLocalDelete.Location = new System.Drawing.Point(255, 274);
+            this.btLocalDelete.Location = new System.Drawing.Point(255, 226);
             this.btLocalDelete.Name = "btLocalDelete";
             this.btLocalDelete.Size = new System.Drawing.Size(75, 23);
             this.btLocalDelete.TabIndex = 4;
@@ -163,7 +164,7 @@
             // btGlobalCreate
             // 
             this.btGlobalCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btGlobalCreate.Location = new System.Drawing.Point(13, 630);
+            this.btGlobalCreate.Location = new System.Drawing.Point(13, 520);
             this.btGlobalCreate.Name = "btGlobalCreate";
             this.btGlobalCreate.Size = new System.Drawing.Size(75, 23);
             this.btGlobalCreate.TabIndex = 5;
@@ -174,7 +175,7 @@
             // btGlobalChange
             // 
             this.btGlobalChange.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btGlobalChange.Location = new System.Drawing.Point(102, 630);
+            this.btGlobalChange.Location = new System.Drawing.Point(102, 520);
             this.btGlobalChange.Name = "btGlobalChange";
             this.btGlobalChange.Size = new System.Drawing.Size(75, 23);
             this.btGlobalChange.TabIndex = 6;
@@ -185,7 +186,7 @@
             // btGlobalDelete
             // 
             this.btGlobalDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btGlobalDelete.Location = new System.Drawing.Point(255, 630);
+            this.btGlobalDelete.Location = new System.Drawing.Point(255, 520);
             this.btGlobalDelete.Name = "btGlobalDelete";
             this.btGlobalDelete.Size = new System.Drawing.Size(75, 23);
             this.btGlobalDelete.TabIndex = 7;
@@ -198,26 +199,25 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(16, 10);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(143, 17);
+            this.checkBox1.Size = new System.Drawing.Size(199, 17);
             this.checkBox1.TabIndex = 8;
-            this.checkBox1.Text = "Рассылка оповещений";
+            this.checkBox1.Text = "Включить рассылку оповещений?";
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
-            // label1
+            // toolTip1
             // 
-            this.label1.Location = new System.Drawing.Point(166, 10);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(603, 71);
-            this.label1.TabIndex = 9;
-            this.label1.Text = resources.GetString("label1.Text");
+            this.toolTip1.BackColor = System.Drawing.Color.Yellow;
+            this.toolTip1.IsBalloon = true;
+            this.toolTip1.OwnerDraw = true;
+            this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.toolTip1.ToolTipTitle = "Опция: Включить рассылку оповещений?";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 668);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(784, 562);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.btGlobalDelete);
             this.Controls.Add(this.btGlobalChange);
@@ -230,6 +230,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "EVE - Environment Variables Editor";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
@@ -255,7 +256,7 @@
         private System.Windows.Forms.Button btGlobalChange;
         private System.Windows.Forms.Button btGlobalDelete;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
