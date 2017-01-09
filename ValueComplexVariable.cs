@@ -32,6 +32,7 @@ namespace EnvVarEditor
                     listView1.Items.Add(lvi);
                 }
                 listView1.Columns[0].Width = -1;
+                CheckVarLength();
             }
         }
 
