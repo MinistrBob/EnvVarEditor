@@ -50,7 +50,10 @@ namespace EnvVarEditor
             var d = groupBox2.Controls[0] as ValueComplexVariable;
             // Если ValueComplexVariable
             if (d != null)
-                varText = d.varText.TrimEnd(';');
+                if (!string.IsNullOrEmpty(d.varText))
+                {
+                    varText = d.varText.TrimEnd(';');
+                }
             //MessageBox.Show(c.varText);
             // Имя переменной должно быть
             if (string.IsNullOrEmpty(tbVarName.Text))
